@@ -1,0 +1,5 @@
+# Sora / TTS build intermediates — not committed (the final mp4 is the deliverable)
+tts/coral_witness_raw.mp4
+tts/palindrome.mp4
+tts/sora_job.json
+tts/poll_sora.sh

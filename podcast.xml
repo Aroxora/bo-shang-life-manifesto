@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+    <atom:link href="https://bo-sam-matter.web.app/podcast.xml" rel="self" type="application/rss+xml" />
     <title>Under the Seal of Unspoken Knowledge — Bo Shang</title>
     <link>https://bo-sam-matter.web.app/</link>
     <language>en-us</language>
+    <lastBuildDate>Sat, 27 Jun 2026 00:00:00 GMT</lastBuildDate>
     <description>The manifesto of Bo Shang, read aloud — slow, solemn, reverent — in five voices. Narrated with OpenAI gpt-4o-mini-tts.</description>
     <itunes:author>Bo Shang</itunes:author>
     <itunes:summary>The manifesto, read aloud in five voices.</itunes:summary>
     <itunes:explicit>false</itunes:explicit>
     <itunes:type>episodic</itunes:type>
     <itunes:category text="Arts" />
-    <itunes:owner><itunes:name>Bo Shang</itunes:name></itunes:owner>
-    <itunes:image href="https://bo-sam-matter.web.app/tts/witness-poster.jpg" />
+    <itunes:owner><itunes:name>Bo Shang</itunes:name><itunes:email>bo@ero.solar</itunes:email></itunes:owner>
+    <itunes:image href="https://bo-sam-matter.web.app/podcast-cover.png" />
     <image>
-      <url>https://bo-sam-matter.web.app/tts/witness-poster.jpg</url>
+      <url>https://bo-sam-matter.web.app/podcast-cover.png</url>
       <title>Under the Seal of Unspoken Knowledge</title>
       <link>https://bo-sam-matter.web.app/</link>
     </image>

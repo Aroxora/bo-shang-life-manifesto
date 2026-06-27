@@ -374,20 +374,20 @@
 
   <!-- ░░░ Reader controls (progressively enhanced; harmless if JS is off) ░░░ -->
   <div class="dock" data-dock hidden>
-    <button class="dock-btn" type="button" data-listen aria-pressed="false">
-      <span class="dock-glyph" data-listen-glyph>&#9654;</span><span class="dock-label" data-listen-label data-on="Listen" data-off="Stop">Listen</span>
+    <button class="dock-btn" type="button" data-listen aria-pressed="false" aria-label="Listen to the dossier">
+      <span class="dock-glyph" data-listen-glyph aria-hidden="true">&#9654;</span><span class="dock-label" data-listen-label data-on="Listen" data-off="Stop" aria-hidden="true">Listen</span>
     </button>
-    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel">
-      <span class="dock-glyph">Aa</span><span class="dock-label">Reading</span>
+    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel" aria-label="Reading options">
+      <span class="dock-glyph" aria-hidden="true">Aa</span><span class="dock-label" aria-hidden="true">Reading</span>
     </button>
-    <button class="dock-btn" type="button" data-quote>
-      <span class="dock-glyph">&#10078;</span><span class="dock-label">Quote</span>
+    <button class="dock-btn" type="button" data-quote aria-label="Make a quote card">
+      <span class="dock-glyph" aria-hidden="true">&#10078;</span><span class="dock-label" aria-hidden="true">Quote</span>
     </button>
-    <button class="dock-btn" type="button" data-print>
-      <span class="dock-glyph">&#9113;</span><span class="dock-label">Print</span>
+    <button class="dock-btn" type="button" data-print aria-label="Print or save as PDF">
+      <span class="dock-glyph" aria-hidden="true">&#9113;</span><span class="dock-label" aria-hidden="true">Print</span>
     </button>
-    <a class="dock-btn" href="zh.html" data-lang hreflang="zh-Hans">
-      <span class="dock-glyph">&#20013;</span><span class="dock-label">中文</span>
+    <a class="dock-btn" href="zh.html" data-lang hreflang="zh-Hans" lang="zh-Hans" aria-label="中文版 / Chinese edition">
+      <span class="dock-glyph" aria-hidden="true">&#20013;</span><span class="dock-label" aria-hidden="true">中文</span>
     </a>
     <span class="dock-sep" aria-hidden="true"></span>
     <span class="dock-nav">
@@ -397,21 +397,21 @@
     </span>
   </div>
 
-  <div class="opts" id="opts-panel" data-opts-panel role="dialog" aria-label="Reading options" aria-hidden="true">
-    <p class="opts-title">Reading options</p>
+  <div class="opts" id="opts-panel" data-opts-panel aria-labelledby="opts-title" aria-hidden="true">
+    <p class="opts-title" id="opts-title">Reading options</p>
     <div class="opt-row">
-      <span>Light reading mode</span>
-      <button class="opt-toggle" type="button" data-opt="theme-light" aria-pressed="false" aria-label="Toggle light reading mode"></button>
+      <span id="opt-light-lbl">Light reading mode</span>
+      <button class="opt-toggle" type="button" data-opt="theme-light" role="switch" aria-checked="false" aria-labelledby="opt-light-lbl"></button>
     </div>
     <div class="opt-row">
-      <span>Legible font</span>
-      <button class="opt-toggle" type="button" data-opt="legible" aria-pressed="false" aria-label="Toggle legible font"></button>
+      <span id="opt-legible-lbl">Legible font</span>
+      <button class="opt-toggle" type="button" data-opt="legible" role="switch" aria-checked="false" aria-labelledby="opt-legible-lbl"></button>
     </div>
     <div class="opt-row">
       <span>Text size</span>
       <span class="opt-size">
         <button class="size-btn" type="button" data-size="-" aria-label="Smaller text">A&minus;</button>
-        <span class="size-val" data-size-val>100%</span>
+        <span class="size-val" data-size-val aria-live="polite">100%</span>
         <button class="size-btn" type="button" data-size="+" aria-label="Larger text">A+</button>
       </span>
     </div>

@@ -387,7 +387,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
   const listenBtn = dock.querySelector('[data-listen]');
   const listenGlyph = dock.querySelector('[data-listen-glyph]');
   const listenLabel = dock.querySelector('[data-listen-label]');
-  let speaking = false, speakIdx = 0, pickedVoice = null;
+  let speaking = false, speakIdx = 0, pickedVoice = null, seqToken = 0;
 
   const pickVoice = () => {
     const want = (document.documentElement.lang || 'en').toLowerCase().slice(0, 2);
@@ -396,11 +396,18 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     return voices.find((v) => v.lang && v.lang.toLowerCase().startsWith(want)) || voices[0];
   };
   const clearSpeak = () => sections.forEach((s) => s.classList.remove('is-speaking'));
+  const setListenPressed = (idx) => {
+    if (listenBtn) listenBtn.setAttribute('aria-pressed', String(idx != null));
+    sections.forEach((s, i) => {
+      const b = s.querySelector('[data-sec-listen]');
+      if (b) b.setAttribute('aria-pressed', String(idx === i));
+    });
+  };
   const stopListen = () => {
-    speaking = false;
+    speaking = false; seqToken++;          // invalidate any in-flight callbacks
     if (synth) synth.cancel();
     clearSpeak();
-    if (listenBtn) listenBtn.setAttribute('aria-pressed', 'false');
+    setListenPressed(null);
     if (listenGlyph) listenGlyph.innerHTML = '&#9654;';
     if (listenLabel) listenLabel.textContent = listenLabel.dataset.on || 'Listen';
   };
@@ -408,22 +415,26 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     if (!speaking) return;
     clearSpeak();
     if (speakIdx >= sections.length) { stopListen(); return; }
-    const sec = sections[speakIdx];
+    const myIdx = speakIdx, mySeq = seqToken;
+    const sec = sections[myIdx];
     const text = sectionText(sec);
-    if (!text) { speakIdx++; next(); return; }
+    if (!text) { speakIdx = myIdx + 1; next(); return; }
     sec.classList.add('is-speaking');
+    setListenPressed(myIdx);
     sec.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     const u = new SpeechSynthesisUtterance(text);
     if (pickedVoice) u.voice = pickedVoice;
     u.rate = 0.92; u.pitch = 0.92;
-    u.onend = () => { if (speaking) { speakIdx++; next(); } };
-    u.onerror = () => { if (speaking) { speakIdx++; next(); } };
+    const advance = () => { if (speaking && mySeq === seqToken) { speakIdx = myIdx + 1; next(); } };
+    u.onend = advance; u.onerror = advance;
     synth.speak(u);
   }
   const speakFrom = (i) => {
     if (!synth) { toast(L.noSpeech || 'Speech not supported here'); return; }
+    synth.cancel();            // flush any queued/playing utterance so only this run plays
+    seqToken++;                // stale onend from the cancelled utterance becomes a no-op
+    clearSpeak();
     speaking = true; speakIdx = i; pickedVoice = pickVoice();
-    if (listenBtn) listenBtn.setAttribute('aria-pressed', 'true');
     if (listenGlyph) listenGlyph.innerHTML = '&#9632;';
     if (listenLabel) listenLabel.textContent = listenLabel.dataset.off || 'Stop';
     next();
@@ -454,11 +465,11 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     c.classList.toggle('theme-light', !!prefs.themeLight);
     c.classList.toggle('reading', !!prefs.themeLight);
     c.classList.toggle('legible', !!prefs.legible);
-    c.style.fontSize = (prefs.size || 18) + 'px';
+    if (prefs.size) c.style.fontSize = prefs.size + 'px'; else c.style.removeProperty('font-size');
     if (prefs.legible) loadLegibleFont();
     if (optsPanel) optsPanel.querySelectorAll('[data-opt]').forEach((b) => {
       const on = b.dataset.opt === 'theme-light' ? !!prefs.themeLight : !!prefs.legible;
-      b.setAttribute('aria-pressed', String(on));
+      b.setAttribute('aria-checked', String(on));
     });
     if (sizeVal) sizeVal.textContent = Math.round(((prefs.size || 18) / 18) * 100) + '%';
   };
@@ -474,6 +485,11 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
   document.addEventListener('click', (e) => {
     if (optsPanel && optsPanel.classList.contains('is-open') &&
         !optsPanel.contains(e.target) && !optsBtn.contains(e.target)) toggleOpts(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && optsPanel && optsPanel.classList.contains('is-open')) {
+      toggleOpts(false); optsBtn.focus();
+    }
   });
   if (optsPanel) {
     optsPanel.querySelectorAll('[data-opt]').forEach((b) => b.addEventListener('click', () => {
@@ -511,25 +527,37 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
   const quoteBtn = dock.querySelector('[data-quote]');
 
   const wrapText = (ctx, text, maxW) => {
-    const words = text.split(/\s+/);
+    // Tokenise into units: Latin/number runs stay whole; each CJK char (and CJK
+    // punctuation) is its own unit; whitespace is preserved. Handles mixed zh/Latin.
+    const hasCJK = /[㐀-鿿豈-﫿]/.test(text);
+    const units = hasCJK
+      ? (text.match(/[A-Za-z0-9$%.,!?'"’“”()—–-]+|\s+|[^\s]/g) || [text])
+      : text.split(/(\s+)/);
     const lines = []; let line = '';
-    if (words.length <= 2 && text.length > 12) {              // CJK / spaceless
-      for (const ch of text) {
-        if (ctx.measureText(line + ch).width > maxW && line) { lines.push(line); line = ch; }
-        else line += ch;
+    for (const u of units) {
+      if (ctx.measureText((line + u).trimEnd()).width > maxW && line.trim()) {
+        lines.push(line.trimEnd());
+        line = /^\s+$/.test(u) ? '' : u;
+      } else {
+        line += u;
       }
-      if (line) lines.push(line); return lines;
     }
-    for (const w of words) {
-      const test = line ? line + ' ' + w : w;
-      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
-      else line = test;
-    }
-    if (line) lines.push(line);
+    if (line.trim()) lines.push(line.trimEnd());
     return lines;
   };
+  let drawSeq = 0;
+  const isZh = (document.documentElement.lang || '').toLowerCase().startsWith('zh');
+  const quoteFont = isZh
+    ? 'italic 700 52px "Crimson Text", "Noto Serif SC", Georgia, serif'
+    : 'italic 700 52px "Crimson Text", Georgia, serif';
   const draw = async (text) => {
     if (!canvas) return;
+    const mine = ++drawSeq;
+    try {
+      await document.fonts.load('italic 700 52px "Crimson Text"');
+      if (isZh) await document.fonts.load('700 52px "Noto Serif SC"');
+    } catch {}
+    if (mine !== drawSeq) return;                 // a newer draw superseded this one
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
     ctx.fillStyle = '#0a0a0b'; ctx.fillRect(0, 0, W, H);
@@ -542,8 +570,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     ctx.fillText('U N D E R   T H E   S E A L', 72, 74);
     ctx.fillStyle = 'rgba(94,23,20,0.75)'; ctx.font = '64px serif'; ctx.textAlign = 'right';
     ctx.fillText('⚜', W - 60, 62); ctx.textAlign = 'left';
-    try { await document.fonts.load('italic 700 52px "Crimson Text"'); } catch {}
-    ctx.fillStyle = '#d7d4cc'; ctx.font = 'italic 700 52px "Crimson Text", Georgia, serif';
+    ctx.fillStyle = '#d7d4cc'; ctx.font = quoteFont;
     const lines = wrapText(ctx, '“' + text.trim() + '”', W - 160).slice(0, 6);
     const lh = 70; let y = Math.max(150, (H - lines.length * lh) / 2 - 10);
     lines.forEach((ln) => { ctx.fillText(ln, 80, y); y += lh; });
@@ -552,12 +579,15 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     ctx.fillStyle = '#6f6c66'; ctx.font = '400 19px "IBM Plex Mono", monospace';
     ctx.fillText('bo-sam-matter.web.app', 80, H - 76);
   };
+  let lastFocus = null;
   const openQuote = (seed) => {
     if (!modal || !canvas) return;
+    lastFocus = document.activeElement;
     qtext.value = (seed || '').replace(/\s+/g, ' ').trim().slice(0, 280);
     draw(qtext.value);
     if (typeof modal.showModal === 'function') { try { modal.showModal(); } catch { modal.setAttribute('open', ''); } }
     else modal.setAttribute('open', '');
+    qtext.focus();
   };
   if (qtext) qtext.addEventListener('input', () => draw(qtext.value));
   if (quoteBtn) quoteBtn.addEventListener('click', () => {
@@ -565,23 +595,33 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     openQuote(sel || (L.defaultQuote || 'I will be a victim whose fidelity to the unspoken becomes its own strange kind of wholeness.'));
   });
   if (modal) {
-    modal.querySelector('[data-qclose]').addEventListener('click', () => modal.close());
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
-    modal.querySelector('[data-qdownload]').addEventListener('click', () => {
-      canvas.toBlob((blob) => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = 'bo-shang-quote.png'; a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      }, 'image/png');
-    });
+    const restore = () => { if (lastFocus && lastFocus.focus) lastFocus.focus(); };
+    const closeModal = () => {
+      if (typeof modal.close === 'function' && modal.open) modal.close();        // fires 'close'
+      else if (modal.hasAttribute('open')) { modal.removeAttribute('open'); restore(); } // <dialog> fallback
+    };
+    modal.addEventListener('close', restore);
+    modal.querySelector('[data-qclose]').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    modal.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); closeModal(); } });
+
+    const exportBlob = (cb) => canvas.toBlob((blob) => {
+      if (!blob) { toast(L.exportFailed || 'Could not export image'); return; }
+      cb(blob);
+    }, 'image/png');
+    modal.querySelector('[data-qdownload]').addEventListener('click', () => exportBlob((blob) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'bo-shang-quote.png'; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }));
     const shareBtn = modal.querySelector('[data-qshare]');
     if (navigator.canShare) {
       try {
         if (navigator.canShare({ files: [new File([new Blob()], 'x.png', { type: 'image/png' })] })) {
           shareBtn.hidden = false;
-          shareBtn.addEventListener('click', () => canvas.toBlob(async (blob) => {
+          shareBtn.addEventListener('click', () => exportBlob(async (blob) => {
             try { await navigator.share({ files: [new File([blob], 'bo-shang-quote.png', { type: 'image/png' })], title: 'Under the Seal', text: qtext.value }); } catch {}
-          }, 'image/png'));
+          }));
         }
       } catch {}
     }
@@ -593,12 +633,14 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
   sections.forEach((sec) => {
     const head = sec.querySelector('.movement-head');
     if (!head) return;
+    const title = (sec.querySelector('.movement-title')?.textContent || '').trim().replace(/"/g, '');
+    const t = title ? ' — ' + title : '';
     const bar = document.createElement('div');
     bar.className = 'sec-actions';
     bar.innerHTML =
-      `<button class="sec-act" type="button" data-sec-listen><span aria-hidden="true">&#9654;</span> ${L.listen || 'Listen'}</button>` +
-      `<button class="sec-act" type="button" data-sec-copy><span aria-hidden="true">&#128279;</span> ${L.copy || 'Copy link'}</button>` +
-      `<button class="sec-act" type="button" data-sec-quote><span aria-hidden="true">&#10078;</span> ${L.quote || 'Quote'}</button>`;
+      `<button class="sec-act" type="button" data-sec-listen aria-pressed="false" aria-label="${(L.listen || 'Listen') + t}"><span aria-hidden="true">&#9654;</span> ${L.listen || 'Listen'}</button>` +
+      `<button class="sec-act" type="button" data-sec-copy aria-label="${(L.copy || 'Copy link') + t}"><span aria-hidden="true">&#128279;</span> ${L.copy || 'Copy link'}</button>` +
+      `<button class="sec-act" type="button" data-sec-quote aria-label="${(L.quote || 'Quote') + t}"><span aria-hidden="true">&#10078;</span> ${L.quote || 'Quote'}</button>`;
     head.appendChild(bar);
     bar.querySelector('[data-sec-listen]').addEventListener('click', () => {
       const i = sections.indexOf(sec);

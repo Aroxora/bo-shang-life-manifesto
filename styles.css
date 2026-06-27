@@ -1051,8 +1051,8 @@ body { padding-bottom: 4.5rem; }
   width: 18px; height: 18px; border-radius: 50%; background: var(--bone-dim);
   transition: transform 0.2s var(--ease), background 0.2s var(--ease);
 }
-.opt-toggle[aria-pressed="true"] { background: rgba(181, 48, 42, 0.4); }
-.opt-toggle[aria-pressed="true"]::after { transform: translateX(20px); background: var(--oxblood-text); }
+.opt-toggle[aria-checked="true"] { background: rgba(181, 48, 42, 0.4); }
+.opt-toggle[aria-checked="true"]::after { transform: translateX(20px); background: var(--oxblood-text); }
 
 .opt-size { display: inline-flex; align-items: center; gap: 0.5rem; }
 .size-btn {

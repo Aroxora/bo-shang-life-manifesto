@@ -316,20 +316,20 @@
   </main>
 
   <div class="dock" data-dock hidden>
-    <button class="dock-btn" type="button" data-listen aria-pressed="false">
-      <span class="dock-glyph" data-listen-glyph>&#9654;</span><span class="dock-label" data-listen-label data-on="聆听" data-off="停止">聆听</span>
+    <button class="dock-btn" type="button" data-listen aria-pressed="false" aria-label="朗读整篇卷宗">
+      <span class="dock-glyph" data-listen-glyph aria-hidden="true">&#9654;</span><span class="dock-label" data-listen-label data-on="聆听" data-off="停止" aria-hidden="true">聆听</span>
     </button>
-    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel">
-      <span class="dock-glyph">Aa</span><span class="dock-label">阅读</span>
+    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel" aria-label="阅读选项">
+      <span class="dock-glyph" aria-hidden="true">Aa</span><span class="dock-label" aria-hidden="true">阅读</span>
     </button>
-    <button class="dock-btn" type="button" data-quote>
-      <span class="dock-glyph">&#10078;</span><span class="dock-label">引语</span>
+    <button class="dock-btn" type="button" data-quote aria-label="生成引语卡片">
+      <span class="dock-glyph" aria-hidden="true">&#10078;</span><span class="dock-label" aria-hidden="true">引语</span>
     </button>
-    <button class="dock-btn" type="button" data-print>
-      <span class="dock-glyph">&#9113;</span><span class="dock-label">打印</span>
+    <button class="dock-btn" type="button" data-print aria-label="打印或另存为 PDF">
+      <span class="dock-glyph" aria-hidden="true">&#9113;</span><span class="dock-label" aria-hidden="true">打印</span>
     </button>
-    <a class="dock-btn" href="/" data-lang hreflang="en">
-      <span class="dock-glyph">EN</span><span class="dock-label">English</span>
+    <a class="dock-btn" href="/" data-lang hreflang="en" lang="en" aria-label="English edition">
+      <span class="dock-glyph" aria-hidden="true">EN</span><span class="dock-label" aria-hidden="true">English</span>
     </a>
     <span class="dock-sep" aria-hidden="true"></span>
     <span class="dock-nav">
@@ -339,21 +339,21 @@
     </span>
   </div>
 
-  <div class="opts" id="opts-panel" data-opts-panel role="dialog" aria-label="阅读选项" aria-hidden="true">
-    <p class="opts-title">阅读选项</p>
+  <div class="opts" id="opts-panel" data-opts-panel aria-labelledby="opts-title" aria-hidden="true">
+    <p class="opts-title" id="opts-title">阅读选项</p>
     <div class="opt-row">
-      <span>浅色阅读模式</span>
-      <button class="opt-toggle" type="button" data-opt="theme-light" aria-pressed="false" aria-label="切换浅色阅读模式"></button>
+      <span id="opt-light-lbl">浅色阅读模式</span>
+      <button class="opt-toggle" type="button" data-opt="theme-light" role="switch" aria-checked="false" aria-labelledby="opt-light-lbl"></button>
     </div>
     <div class="opt-row">
-      <span>易读字体</span>
-      <button class="opt-toggle" type="button" data-opt="legible" aria-pressed="false" aria-label="切换易读字体"></button>
+      <span id="opt-legible-lbl">易读字体</span>
+      <button class="opt-toggle" type="button" data-opt="legible" role="switch" aria-checked="false" aria-labelledby="opt-legible-lbl"></button>
     </div>
     <div class="opt-row">
       <span>字号</span>
       <span class="opt-size">
         <button class="size-btn" type="button" data-size="-" aria-label="缩小文字">A&minus;</button>
-        <span class="size-val" data-size-val>100%</span>
+        <span class="size-val" data-size-val aria-live="polite">100%</span>
         <button class="size-btn" type="button" data-size="+" aria-label="放大文字">A+</button>
       </span>
     </div>

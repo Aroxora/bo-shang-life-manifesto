@@ -1,10 +1,10 @@
 /* Service worker — offline shell for the sealed dossier.
-   Bump CACHE to invalidate. The heavy media (audio/video) is intentionally
-   left to the network and cached only after it is first fetched. */
-const CACHE = 'dossier-v1';
+   Code/markup (html/js/css/xml/manifest) is network-first so a new deploy is
+   picked up immediately, with the cache as the offline fallback. Heavy media
+   (audio/video/images) is cache-first and only cached after first fetch. */
+const CACHE = 'dossier-v2';
 const SHELL = [
   '/',
-  '/index.html',
   '/zh.html',
   '/styles.css',
   '/script.js',
@@ -31,29 +31,32 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+const netFirst = (req) =>
+  fetch(req).then((res) => { cachePut(req, res.clone()); return res; })
+    .catch(() => caches.match(req));
+
+const cacheFirst = (req) =>
+  caches.match(req).then((cached) => cached || fetch(req).then((res) => { cachePut(req, res.clone()); return res; }));
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Navigations: network-first, fall back to cached shell (offline reading).
+  // Navigations: always try the network, fall back to the cached shell offline.
   if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req)
-        .then((res) => { cachePut(req, res.clone()); return res; })
-        .catch(() => caches.match(req).then((m) => m || caches.match('/index.html')))
-    );
+    e.respondWith(netFirst(req).then((r) => r || caches.match('/')));
     return;
   }
 
-  // Same-origin assets: cache-first, refresh in background.
   if (url.origin === location.origin) {
-    e.respondWith(
-      caches.match(req).then((cached) => {
-        const net = fetch(req).then((res) => { cachePut(req, res.clone()); return res; }).catch(() => cached);
-        return cached || net;
-      })
-    );
+    // Code/markup: network-first (deploys land immediately; cache is offline backup).
+    if (/\.(?:js|css|html|json|webmanifest|xml)$/.test(url.pathname)) {
+      e.respondWith(netFirst(req));
+      return;
+    }
+    // Media and everything else same-origin: cache-first.
+    e.respondWith(cacheFirst(req));
     return;
   }
 

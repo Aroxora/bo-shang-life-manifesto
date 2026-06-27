@@ -3,3 +3,6 @@ tts/coral_witness_raw.mp4
 tts/palindrome.mp4
 tts/sora_job.json
 tts/poll_sora.sh
+
+# Firebase Hosting local deploy cache
+.firebase/

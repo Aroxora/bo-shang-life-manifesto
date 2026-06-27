@@ -1,0 +1,23 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "**/.*",
+      "firebase.json",
+      "README.md",
+      "tts/*.txt",
+      "tts/*.sh",
+      "tts/*.json",
+      "tts/coral_witness_raw.mp4",
+      "tts/palindrome.mp4"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(mp3|mp4|jpg|vtt)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=604800" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1018 @@
+/* ============================================================
+   Under the Seal of Unspoken Knowledge — Bo Shang
+   A sealed dossier. Crimson Text (liturgy) + IBM Plex Mono (the
+   institutional, redacted-transcript voice). Oxblood is the wound
+   and the seal; a whisper of cold light is the shaft of testimony.
+   Fonts are loaded via a <link> in index.html's <head> (discoverable by the
+   preload scanner) rather than an @import here.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --void:        #0a0a0b;
+  --paper:       #131316;
+  --paper-2:     #17171b;
+  --bone:        #d7d4cc;
+  --bone-dim:    #9a968d;
+  --ash:         #8d8a82;   /* muted text — lifted to clear WCAG AA (>=4.5:1) on --void */
+  --oxblood:     #b5302a;   /* the seal: borders, marks, gradients, the strike */
+  --oxblood-text:#d2554d;   /* the ink: oxblood used as small text — AA-legible on --void */
+  --oxblood-dim: #5e1714;
+  --shaft:       #9fc6cf;   /* the cold cathedral light — used only as a whisper */
+  --border:      #26262b;
+  --border-soft: #1c1c20;
+  --redact:      #050506;
+
+  --serif: 'Crimson Text', 'Georgia', 'Times New Roman', serif;
+  --mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --col: 640px;        /* reading column */
+  --rail-w: 200px;     /* left index rail */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+html {
+  font-size: 18px;
+  background: var(--void);
+  color: var(--bone);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--serif);
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--oxblood-dim);
+  color: var(--bone);
+}
+
+a { color: inherit; }
+
+/* ---- shared focus ring (cold light, so it reads as "the shaft") ---- */
+:focus-visible {
+  outline: 2px solid var(--shaft);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* scroll targets receive focus on in-page nav for SR/keyboard users, but a ring
+   around a whole section would be noise — the scroll itself is the cue. */
+.movement:focus,
+.seal-section:focus {
+  outline: none;
+}
+
+/* ---- skip link ---- */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  margin: 0.6rem;
+  padding: 0.6rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--oxblood);
+  color: var(--bone);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-150%);
+  transition: transform 0.2s var(--ease);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ============================================================
+   Atmosphere — grain + vignette (echoes the Sora film grain)
+   ============================================================ */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(0,0,0,0.55) 100%),
+    radial-gradient(140% 120% at 50% 100%, transparent 60%, rgba(0,0,0,0.4) 100%);
+}
+
+/* ============================================================
+   The index rail — table of contents + reading-progress spine
+   ============================================================ */
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--rail-w);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  padding-left: 2.25rem;
+}
+
+.rail-spine {
+  position: absolute;
+  left: 2.25rem;
+  top: 18%;
+  bottom: 18%;
+  width: 1px;
+  background: var(--border);
+}
+
+.rail-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: calc(var(--progress, 0) * 100%);
+  background: linear-gradient(var(--oxblood), var(--shaft));
+  box-shadow: 0 0 8px rgba(181, 48, 42, 0.5);
+}
+
+.rail-list {
+  list-style: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding-left: 1.1rem;
+}
+
+.rail-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--ash);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 0.35s var(--ease);
+}
+
+.rail-list a::before {
+  content: attr(data-num);
+  display: inline-block;
+  width: 1.4em;
+  text-align: right;
+  color: var(--ash);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.35s var(--ease);
+}
+
+.rail-label {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
+.rail-list a:hover,
+.rail-list a:focus-visible,
+.rail-list a.is-active {
+  color: var(--bone);
+}
+
+.rail-list a:hover .rail-label,
+.rail-list a:focus-visible .rail-label,
+.rail-list a.is-active .rail-label {
+  opacity: 1;
+  transform: none;
+}
+
+.rail-list a.is-active::before {
+  color: var(--oxblood-text);
+}
+
+/* ============================================================
+   Dossier layout
+   ============================================================ */
+.dossier {
+  max-width: calc(var(--col) + var(--rail-w));
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  padding-left: calc(var(--rail-w) + 1.5rem);
+}
+
+.movement {
+  max-width: var(--col);
+  padding: 5.5rem 0;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ---- Movement headers ---- */
+.movement-head {
+  position: relative;
+  margin-bottom: 2.75rem;
+}
+
+.movement-num {
+  display: block;
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  line-height: 1;
+  font-style: italic;
+  color: var(--oxblood-dim);
+  opacity: 0.55;
+  margin-bottom: 0.5rem;
+}
+
+.movement-kicker {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--oxblood-text);
+  margin-bottom: 0.7rem;
+}
+
+.movement-title {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: var(--bone);
+}
+
+.movement-deck {
+  margin-top: 0.85rem;
+  font-size: 1.02rem;
+  font-style: italic;
+  color: var(--bone-dim);
+  max-width: 34em;
+}
+
+/* ============================================================
+   The Seal — hero
+   ============================================================ */
+.seal-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6rem 0 4rem;
+}
+
+.stamp {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--oxblood-text);
+  border: 1px solid var(--oxblood-dim);
+  padding: 0.5rem 0.85rem;
+  align-self: flex-start;
+  margin-bottom: 2.5rem;
+}
+
+.seal-mark {
+  font-size: 2.6rem;
+  color: var(--oxblood-dim);
+  opacity: 0.6;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 0 24px rgba(181, 48, 42, 0.25);
+}
+
+.seal-title {
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  color: var(--bone);
+  margin-bottom: 2rem;
+}
+
+.seal-title em {
+  font-style: italic;
+  color: var(--bone-dim);
+}
+
+.seal-line {
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-style: italic;
+  color: var(--bone);
+  max-width: 24em;
+  margin-bottom: 1.5rem;
+}
+
+.seal-sub {
+  font-size: 1rem;
+  color: var(--bone-dim);
+  max-width: 32em;
+  margin-bottom: 3rem;
+}
+
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  transition: color 0.3s var(--ease);
+}
+
+.scroll-cue:hover { color: var(--bone); }
+
+.scroll-cue-mark {
+  display: inline-block;
+  animation: drift 2.4s var(--ease) infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(5px); opacity: 1; }
+}
+
+/* ============================================================
+   Redaction — the signature. It refuses to reveal.
+   ============================================================ */
+.redaction {
+  position: relative;
+  color: transparent;
+  background: var(--redact);
+  padding: 0 0.4em;
+  border-radius: 1px;
+  box-shadow: inset 0 0 0 1px rgba(181, 48, 42, 0.22);
+  cursor: not-allowed;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  transition: box-shadow 0.35s var(--ease);
+}
+
+.redaction::after {
+  content: attr(data-sealed);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.52em;
+  letter-spacing: 0.32em;
+  color: var(--oxblood-text);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.redaction:hover,
+.redaction:focus-visible {
+  box-shadow: inset 0 0 0 1px rgba(181, 48, 42, 0.6);
+}
+
+.redaction:hover::after,
+.redaction:focus-visible::after {
+  opacity: 1;
+}
+
+/* ============================================================
+   I — The Letter (the original artifact, framed as an exhibit)
+   ============================================================ */
+.letter {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  padding: 3rem 2.75rem;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
+}
+
+.letter-classification {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--oxblood-text);
+  text-align: center;
+  margin-bottom: 2.25rem;
+  user-select: none;
+}
+
+.letter-salutation {
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-bottom: 1.75rem;
+}
+
+.letter-body p {
+  margin-bottom: 1.4rem;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.hashtag {
+  color: var(--oxblood-text);
+  font-weight: 600;
+}
+
+.flag { font-size: 1.1em; }
+
+.letter-foot {
+  margin-top: 2.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.letter-sign {
+  font-style: italic;
+  color: var(--bone-dim);
+  margin-bottom: 0.25rem;
+}
+
+.letter-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.letter-seal {
+  display: block;
+  text-align: right;
+  font-size: 1.7rem;
+  color: var(--oxblood-dim);
+  opacity: 0.5;
+  margin-top: 0.5rem;
+}
+
+/* ============================================================
+   II — The Manifesto
+   ============================================================ */
+.creed {
+  font-size: 1.22rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.creed-close {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-soft);
+  font-style: italic;
+  color: var(--bone-dim);
+}
+
+.resolve-intro {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--oxblood-text);
+  margin: 2.5rem 0 1.5rem;
+}
+
+.resolves {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.resolve {
+  display: flex;
+  gap: 1rem;
+  border-left: 1px solid var(--border);
+  padding: 0.1rem 0 0.1rem 1.25rem;
+}
+
+.resolve-mark {
+  flex: none;
+  color: var(--oxblood-dim);
+  font-size: 0.9rem;
+  line-height: 1.95;
+  opacity: 0.85;
+}
+
+.resolve p {
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+/* ============================================================
+   III — Spoken Renditions player
+   ============================================================ */
+.player {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  padding: 1.75rem;
+}
+
+.player-voices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem;
+}
+
+.voice {
+  flex: 1 1 auto;
+  min-width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--bone-dim);
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.voice:hover {
+  color: var(--bone);
+  border-color: var(--ash);
+}
+
+.voice-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.voice-dur {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--ash);
+}
+
+.voice[aria-checked="true"] {
+  border-color: var(--oxblood);
+  color: var(--bone);
+  background: rgba(181, 48, 42, 0.07);
+}
+
+.voice[aria-checked="true"] .voice-dur { color: var(--oxblood-text); }
+
+.player-transport {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.play {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--oxblood);
+  background: rgba(181, 48, 42, 0.08);
+  color: var(--bone);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.25s var(--ease), transform 0.15s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.play:hover {
+  background: rgba(181, 48, 42, 0.18);
+  box-shadow: 0 0 22px rgba(181, 48, 42, 0.3);
+}
+
+.play:active { transform: scale(0.95); }
+
+.play-icon { font-size: 0.95rem; line-height: 1; }
+.play-icon--play { margin-left: 3px; }       /* optical centring of the triangle */
+.play-icon--pause { display: none; letter-spacing: -2px; }
+
+.play[aria-pressed="true"] .play-icon--play  { display: none; }
+.play[aria-pressed="true"] .play-icon--pause { display: inline; }
+
+.player-track {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.player-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.7rem;
+}
+
+.player-now {
+  color: var(--bone);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  min-width: 0;            /* let it shrink so the ellipsis engages on narrow screens */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-now-label { color: var(--ash); }
+.player-now-note { color: var(--ash); text-transform: none; letter-spacing: 0.04em; }
+
+.player-time {
+  color: var(--bone-dim);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.player-time-sep { color: var(--ash); margin: 0 0.15em; }
+
+.scrub {
+  position: relative;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.scrub::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+}
+
+.scrub-fill {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--oxblood), var(--shaft));
+}
+
+.scrub-head {
+  position: absolute;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bone);
+  box-shadow: 0 0 10px rgba(159, 198, 207, 0.6);
+  transform: translateX(-50%);
+  transition: transform 0.1s var(--ease);
+}
+
+.scrub:hover .scrub-head { transform: translateX(-50%) scale(1.25); }
+
+.player-fallback {
+  margin-top: 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--ash);
+}
+
+.player-fallback a { color: var(--bone-dim); text-underline-offset: 3px; }
+.player-fallback a:hover { color: var(--oxblood-text); }
+
+/* ============================================================
+   IV — The Witness (video)
+   ============================================================ */
+.witness {
+  border: 1px solid var(--border);
+  background: #000;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+}
+
+.witness-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.witness-cap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.95rem 1.1rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--ash);
+}
+
+.witness-cap-mark { color: var(--oxblood-text); font-size: 0.55rem; }
+
+/* ============================================================
+   V — The Severance (the mirror of the Seal: it names and releases
+   what the other manifesto sealed). Severed = struck through but
+   legible; reclaimed = lit in cold light.
+   ============================================================ */
+.severance .decree {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.severance .decree-lede {
+  font-size: 1.28rem;
+  line-height: 1.6;
+  color: var(--bone);
+}
+
+/* the real person — severed, but never hidden */
+.severed {
+  color: var(--ash);
+  text-decoration: line-through;
+  text-decoration-color: var(--oxblood);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+/* the inner invention — reclaimed, lit by the shaft */
+.reclaimed {
+  color: var(--shaft);
+  font-style: italic;
+  text-shadow: 0 0 18px rgba(159, 198, 207, 0.25);
+}
+
+.breath {
+  margin: 2.25rem 0 1.5rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--oxblood-dim);
+  color: var(--bone-dim);
+  font-style: italic;
+}
+
+.breath .breath-cue {
+  font-style: normal;
+  color: var(--oxblood-text);
+  letter-spacing: 0.06em;
+}
+
+.declare {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-soft);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--bone);
+}
+
+.severance-foot {
+  margin-top: 2.5rem;
+}
+
+.severance-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--bone);
+}
+
+.severance-date {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+/* ledger figures inside the Dispatch (II) */
+.figure {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--oxblood-text);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* the wry sign-off emoji — keep it from looming too large in serif copy */
+.halo {
+  font-size: 0.9em;
+  vertical-align: 0.02em;
+}
+
+/* ============================================================
+   VII — To Sam (the forward dream, lit like the reclaimed Sam)
+   ============================================================ */
+.dream .decree {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.dream .decree-lede {
+  font-size: 1.3rem;
+  line-height: 1.55;
+  color: var(--bone);
+}
+
+/* ============================================================
+   VIII — Colophon
+   ============================================================ */
+.spec {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1.25rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.spec-row:first-child { border-top: 1px solid var(--border-soft); }
+
+.spec dt {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--oxblood-text);
+  padding-top: 0.2rem;
+}
+
+.spec dd { color: var(--bone-dim); }
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--bone);
+  letter-spacing: 0.02em;
+}
+
+.prompt {
+  margin-top: 2.5rem;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  padding: 1.5rem 1.75rem;
+}
+
+.prompt-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  margin-bottom: 1rem;
+}
+
+.prompt-text {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.85;
+  color: var(--bone-dim);
+  border-left: 2px solid var(--oxblood-dim);
+  padding-left: 1.1rem;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.dossier-foot {
+  max-width: var(--col);
+  text-align: center;
+  padding: 5rem 0 6rem;
+  border-top: 1px solid var(--border-soft);
+}
+
+.dossier-seal {
+  font-size: 1.8rem;
+  color: var(--oxblood-dim);
+  opacity: 0.5;
+  margin-bottom: 1.25rem;
+}
+
+.dossier-foot p {
+  font-style: italic;
+  color: var(--ash);
+  font-size: 0.95rem;
+  max-width: 34em;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Reveal on scroll (gated by prefers-reduced-motion below)
+   ============================================================ */
+.reveal {
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+/* Only hide content once JS is confirmed running, so a failed script
+   never leaves the dossier blank. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 960px) {
+  .dossier {
+    padding-left: 1.5rem;
+    max-width: var(--col);
+  }
+
+  /* rail collapses to a thin reading-progress bar pinned to the top */
+  .rail {
+    width: 100%;
+    height: 3px;
+    top: 0;
+    padding: 0;
+    align-items: stretch;
+  }
+  .rail-spine {
+    left: 0;
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    height: 3px;
+  }
+  .rail-fill {
+    width: calc(var(--progress, 0) * 100%);
+    height: 3px;
+    background: linear-gradient(90deg, var(--oxblood), var(--shaft));
+  }
+  .rail-list { display: none; }
+}
+
+@media (max-width: 560px) {
+  html { font-size: 16px; }
+
+  .movement { padding: 4rem 0; }
+  .movement-num { font-size: 2.8rem; }
+  .movement-title { font-size: 1.7rem; }
+
+  .letter { padding: 2rem 1.35rem; }
+
+  .player { padding: 1.35rem; }
+  .player-transport { gap: 0.85rem; }
+  .play { width: 50px; height: 50px; }
+  .voice { min-width: calc(50% - 0.3rem); }
+
+  .spec-row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .redaction { white-space: normal; }
+}
+
+/* ============================================================
+   Reduced motion — keep the document still
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* match the .js .reveal specificity (0,2,0) so this actually wins */
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-cue-mark { animation: none; }
+}

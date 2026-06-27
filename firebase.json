@@ -3,6 +3,10 @@
     "public": ".",
     "ignore": [
       "**/.*",
+      "**/.*/**",
+      ".git/**",
+      ".firebase/**",
+      ".claude/**",
       "firebase.json",
       "README.md",
       "tts/*.txt",

@@ -940,6 +940,283 @@ a { color: inherit; }
   transform: none;
 }
 
+/* give the fixed dock room so the footer can clear it */
+body { padding-bottom: 4.5rem; }
+
+/* ============================================================
+   Utility dock — global reader controls (JS-enhanced)
+   ============================================================ */
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  gap: 0.15rem;
+  padding: 0.3rem;
+  background: rgba(15, 15, 18, 0.82);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  max-width: calc(100vw - 1.5rem);
+}
+
+.dock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 0;
+  color: var(--bone-dim);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.dock-btn:hover { color: var(--bone); background: rgba(181, 48, 42, 0.1); }
+.dock-btn.is-on { color: var(--oxblood-text); background: rgba(181, 48, 42, 0.12); }
+
+.dock-glyph { font-size: 0.85rem; line-height: 1; }
+.dock-label { }
+
+.dock-sep { width: 1px; background: var(--border); margin: 0.35rem 0.1rem; }
+
+.dock-nav { display: inline-flex; align-items: center; }
+.dock-chevron {
+  background: transparent; border: 0; cursor: pointer; color: var(--bone-dim);
+  font-size: 1rem; line-height: 1; padding: 0.5rem 0.45rem;
+  transition: color 0.2s var(--ease);
+}
+.dock-chevron:hover { color: var(--bone); }
+.dock-progress {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  color: var(--ash); min-width: 4.4em; text-align: center;
+  font-variant-numeric: tabular-nums; align-self: center;
+}
+.dock-progress b { color: var(--oxblood-text); font-weight: 500; }
+
+/* hide labels on small screens, keep glyphs */
+@media (max-width: 760px) {
+  .dock-label { display: none; }
+  .dock-btn { padding: 0.5rem 0.55rem; }
+}
+
+/* ============================================================
+   Reading-options popover
+   ============================================================ */
+.opts {
+  position: fixed;
+  left: 50%;
+  bottom: 4rem;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 61;
+  width: min(20rem, calc(100vw - 2rem));
+  background: var(--paper);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.6);
+  padding: 1rem 1.1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), visibility 0.2s;
+}
+.opts.is-open { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+.opts-title {
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--oxblood-text); margin-bottom: 0.85rem;
+}
+.opt-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: 0.55rem 0; border-top: 1px solid var(--border-soft);
+}
+.opt-row span { font-size: 0.95rem; color: var(--bone); }
+.opt-toggle {
+  flex: none; width: 42px; height: 22px; border-radius: 12px;
+  background: var(--border); border: 1px solid var(--border);
+  position: relative; cursor: pointer; transition: background 0.2s var(--ease);
+}
+.opt-toggle::after {
+  content: ''; position: absolute; top: 1px; left: 1px;
+  width: 18px; height: 18px; border-radius: 50%; background: var(--bone-dim);
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+.opt-toggle[aria-pressed="true"] { background: rgba(181, 48, 42, 0.4); }
+.opt-toggle[aria-pressed="true"]::after { transform: translateX(20px); background: var(--oxblood-text); }
+
+.opt-size { display: inline-flex; align-items: center; gap: 0.5rem; }
+.size-btn {
+  width: 30px; height: 30px; border: 1px solid var(--border); background: transparent;
+  color: var(--bone); font-family: var(--mono); cursor: pointer; border-radius: 2px;
+}
+.size-btn:hover { border-color: var(--oxblood); color: var(--oxblood-text); }
+.size-val { font-family: var(--mono); font-size: 0.7rem; color: var(--ash); min-width: 3em; text-align: center; }
+
+/* ============================================================
+   Per-section action buttons (injected into each header)
+   ============================================================ */
+.sec-actions {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.1rem;
+}
+.sec-act {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: transparent; border: 1px solid var(--border-soft);
+  color: var(--ash); font-family: var(--mono); font-size: 0.56rem;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.6rem;
+  cursor: pointer; border-radius: 2px;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.sec-act:hover { color: var(--bone); border-color: var(--ash); }
+.sec-act.is-on { color: var(--oxblood-text); border-color: var(--oxblood); }
+.sec-act.copied { color: var(--shaft); border-color: var(--shaft); }
+
+/* the section currently being read aloud */
+.is-speaking {
+  position: relative;
+}
+.is-speaking::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(var(--oxblood), var(--shaft));
+  box-shadow: 0 0 12px rgba(181, 48, 42, 0.5);
+}
+@media (max-width: 960px) { .is-speaking::before { left: -0.75rem; } }
+
+/* ============================================================
+   Quote-card modal
+   ============================================================ */
+.qmodal {
+  border: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--bone);
+  padding: 0;
+  max-width: 560px;
+  width: calc(100vw - 2rem);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.7);
+}
+.qmodal::backdrop { background: rgba(0, 0, 0, 0.7); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.qmodal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border);
+}
+.qmodal-title {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--oxblood-text);
+}
+.qmodal-close {
+  background: transparent; border: 0; color: var(--bone-dim);
+  font-size: 1.2rem; line-height: 1; cursor: pointer; padding: 0.2rem;
+}
+.qmodal-close:hover { color: var(--bone); }
+.qmodal-body { padding: 1.1rem; }
+.qmodal-canvas-wrap { background: #000; border: 1px solid var(--border); }
+.qmodal canvas { display: block; width: 100%; height: auto; }
+.qmodal-field {
+  width: 100%; margin-top: 0.9rem; background: var(--void); color: var(--bone);
+  border: 1px solid var(--border); padding: 0.6rem 0.7rem; resize: vertical;
+  font-family: var(--serif); font-size: 0.95rem; line-height: 1.5; min-height: 4rem;
+}
+.qmodal-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.qmodal-btn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  background: rgba(181, 48, 42, 0.1); border: 1px solid var(--oxblood);
+  color: var(--bone); font-family: var(--mono); font-size: 0.6rem;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 0.55rem 0.9rem;
+  cursor: pointer; border-radius: 2px; transition: background 0.2s var(--ease);
+}
+.qmodal-btn:hover { background: rgba(181, 48, 42, 0.2); }
+.qmodal-btn.ghost { background: transparent; border-color: var(--border); color: var(--bone-dim); }
+.qmodal-btn.ghost:hover { color: var(--bone); border-color: var(--ash); }
+
+/* toast for copy/share feedback */
+.toast {
+  position: fixed; left: 50%; bottom: 5.2rem; transform: translateX(-50%) translateY(10px);
+  z-index: 70; background: var(--paper); border: 1px solid var(--oxblood);
+  color: var(--bone); font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+  padding: 0.55rem 0.9rem; border-radius: 2px; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+   Reading mode — light, high-readability theme
+   ============================================================ */
+html.theme-light {
+  --void:        #efeae0;
+  --paper:       #f6f2e9;
+  --paper-2:     #efeae0;
+  --bone:        #201d18;
+  --bone-dim:    #4a4439;
+  --ash:         #6c6557;
+  --oxblood:     #9a271f;
+  --oxblood-text:#9a271f;
+  --oxblood-dim: #c89a8f;
+  --border:      #d8d0c0;
+  --border-soft: #e6ded0;
+  --redact:      #201d18;
+}
+html.theme-light .grain { opacity: 0.02; }
+html.theme-light .vignette {
+  background: radial-gradient(130% 110% at 50% 30%, transparent 70%, rgba(120,110,90,0.16) 100%);
+}
+html.theme-light .dock { background: rgba(246, 242, 233, 0.9); }
+html.theme-light .letter,
+html.theme-light .player,
+html.theme-light .prompt { box-shadow: 0 0 50px rgba(120, 110, 90, 0.12); }
+
+/* high-readability layout: stop justifying, open the leading */
+html.reading .letter-body p,
+html.reading .creed,
+html.reading .decree,
+html.reading .resolve p,
+html.reading .dream .decree,
+html.reading .colophon dd { text-align: left; hyphens: manual; line-height: 1.95; }
+
+/* legible (low-vision) font */
+html.legible body { font-family: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif; }
+html.legible .stamp,
+html.legible .movement-kicker,
+html.legible .dock,
+html.legible .mono,
+html.legible .prompt-text { font-family: 'Atkinson Hyperlegible', ui-monospace, monospace; }
+
+/* ============================================================
+   Print — render the dossier as a real document
+   ============================================================ */
+@media print {
+  html, body { background: #fff; color: #111; }
+  .grain, .vignette, .rail, .dock, .opts, .skip-link, .scroll-cue,
+  .sec-actions, .player, .witness, .qmodal, .toast { display: none !important; }
+  .dossier { max-width: none; margin: 0; padding: 0; }
+  body { padding: 0; }
+  .movement, .seal-section { padding: 1.5cm 0; border: none; break-inside: avoid-page; }
+  .seal-section { min-height: auto; }
+  .js .reveal { opacity: 1 !important; transform: none !important; }
+  .movement-num { color: #b5302a; opacity: 1; }
+  .movement-kicker, .movement-title, .letter-classification,
+  .resolve-intro, .spec dt, .stamp { color: #b5302a; }
+  .seal-title, .movement-title, .creed, .decree, .letter-body p,
+  .declare, .resolve p, .colophon dd { color: #111; }
+  .redaction { color: #fff !important; background: #111; box-shadow: none; }
+  .redaction::after { display: none; }
+  .severed { color: #555; }
+  .reclaimed { color: #111; text-shadow: none; font-style: italic; }
+  a { color: #111; text-decoration: none; }
+  .letter { border: 1px solid #ccc; box-shadow: none; }
+  .movement { page-break-inside: avoid; }
+}
+
 /* ============================================================
    Responsive
    ============================================================ */

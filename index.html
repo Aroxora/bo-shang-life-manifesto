@@ -7,7 +7,33 @@
   <meta name="description" content="A sealed dossier: the final statement, the manifesto, its spoken renditions, and the witness. Bo Shang.">
   <meta name="theme-color" content="#0a0a0b">
   <link rel="canonical" href="https://bo-sam-matter.web.app/">
+  <link rel="alternate" hreflang="en" href="https://bo-sam-matter.web.app/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://bo-sam-matter.web.app/zh.html">
+  <link rel="alternate" hreflang="x-default" href="https://bo-sam-matter.web.app/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a0b'/%3E%3Ctext y='13' x='2' font-size='12' fill='%23b5302a'%3E%E2%9A%9C%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "Under the Seal of Unspoken Knowledge",
+    "alternativeHeadline": "A sealed dossier",
+    "author": { "@type": "Person", "name": "Bo Shang" },
+    "inLanguage": "en",
+    "url": "https://bo-sam-matter.web.app/",
+    "image": "https://bo-sam-matter.web.app/tts/witness-poster.jpg",
+    "datePublished": "2026-06-25",
+    "genre": ["manifesto", "spoken word", "digital art"],
+    "keywords": "manifesto, Bo Shang, sealed dossier, spoken word",
+    "associatedMedia": [
+      { "@type": "AudioObject", "name": "Coral narration", "contentUrl": "https://bo-sam-matter.web.app/tts/victim-manifesto-coral.mp3", "encodingFormat": "audio/mpeg" },
+      { "@type": "VideoObject", "name": "The Witness", "contentUrl": "https://bo-sam-matter.web.app/tts/victim-manifesto-coral-video.mp4", "thumbnailUrl": "https://bo-sam-matter.web.app/tts/witness-poster.jpg", "uploadDate": "2026-06-25", "description": "The Coral narration over a lone figure in a cathedral-like space." }
+    ]
+  }
+  </script>
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bo Shang">
@@ -28,6 +54,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    /* apply saved reading preferences before first paint (no flash) */
+    try {
+      var p = JSON.parse(localStorage.getItem('dossier-prefs') || '{}');
+      var c = document.documentElement;
+      if (p.themeLight) c.classList.add('theme-light', 'reading');
+      if (p.legible) c.classList.add('legible');
+      if (p.size) c.style.fontSize = p.size + 'px';
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#letter">Skip to the dossier</a>
@@ -335,6 +371,69 @@
       <p>Bo Shang. Remembered not by the details of the wound, but by the grace of enduring it without revelation.</p>
     </footer>
   </main>
+
+  <!-- ░░░ Reader controls (progressively enhanced; harmless if JS is off) ░░░ -->
+  <div class="dock" data-dock hidden>
+    <button class="dock-btn" type="button" data-listen aria-pressed="false">
+      <span class="dock-glyph" data-listen-glyph>&#9654;</span><span class="dock-label" data-listen-label data-on="Listen" data-off="Stop">Listen</span>
+    </button>
+    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel">
+      <span class="dock-glyph">Aa</span><span class="dock-label">Reading</span>
+    </button>
+    <button class="dock-btn" type="button" data-quote>
+      <span class="dock-glyph">&#10078;</span><span class="dock-label">Quote</span>
+    </button>
+    <button class="dock-btn" type="button" data-print>
+      <span class="dock-glyph">&#9113;</span><span class="dock-label">Print</span>
+    </button>
+    <a class="dock-btn" href="zh.html" data-lang hreflang="zh-Hans">
+      <span class="dock-glyph">&#20013;</span><span class="dock-label">中文</span>
+    </a>
+    <span class="dock-sep" aria-hidden="true"></span>
+    <span class="dock-nav">
+      <button class="dock-chevron" type="button" data-prev aria-label="Previous section">&#8249;</button>
+      <span class="dock-progress"><b data-progress>0</b>% read</span>
+      <button class="dock-chevron" type="button" data-next aria-label="Next section">&#8250;</button>
+    </span>
+  </div>
+
+  <div class="opts" id="opts-panel" data-opts-panel role="dialog" aria-label="Reading options" aria-hidden="true">
+    <p class="opts-title">Reading options</p>
+    <div class="opt-row">
+      <span>Light reading mode</span>
+      <button class="opt-toggle" type="button" data-opt="theme-light" aria-pressed="false" aria-label="Toggle light reading mode"></button>
+    </div>
+    <div class="opt-row">
+      <span>Legible font</span>
+      <button class="opt-toggle" type="button" data-opt="legible" aria-pressed="false" aria-label="Toggle legible font"></button>
+    </div>
+    <div class="opt-row">
+      <span>Text size</span>
+      <span class="opt-size">
+        <button class="size-btn" type="button" data-size="-" aria-label="Smaller text">A&minus;</button>
+        <span class="size-val" data-size-val>100%</span>
+        <button class="size-btn" type="button" data-size="+" aria-label="Larger text">A+</button>
+      </span>
+    </div>
+  </div>
+
+  <dialog class="qmodal" data-qmodal aria-label="Quote card">
+    <div class="qmodal-head">
+      <span class="qmodal-title">Quote card</span>
+      <button class="qmodal-close" type="button" data-qclose aria-label="Close">&times;</button>
+    </div>
+    <div class="qmodal-body">
+      <div class="qmodal-canvas-wrap"><canvas data-qcanvas width="1200" height="630"></canvas></div>
+      <textarea class="qmodal-field" data-qtext aria-label="Quote text" maxlength="300"></textarea>
+      <div class="qmodal-actions">
+        <button class="qmodal-btn" type="button" data-qdownload><span aria-hidden="true">&#10515;</span> Download card</button>
+        <button class="qmodal-btn" type="button" data-qshare hidden><span aria-hidden="true">&#8599;</span> Share</button>
+        <button class="qmodal-btn ghost" type="button" data-qcopy>Copy text</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
 
   <script type="module" src="script.js"></script>
 </body>

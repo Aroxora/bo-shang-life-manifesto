@@ -77,6 +77,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     rail.style.setProperty('--progress', ratio.toFixed(4));
+    const progEl = document.querySelector('[data-progress]');
+    if (progEl) progEl.textContent = Math.round(ratio * 100);
 
     // scroll-spy: the section whose top last crossed the upper third wins
     const marker = window.innerHeight * 0.35;
@@ -339,4 +341,292 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     }
     if (handled) e.preventDefault();
   });
+})();
+
+/* ------------------------------------------------------------------
+   Reader enhancements — dock, options, listen, quote, section actions
+   ------------------------------------------------------------------ */
+(() => {
+  const dock = document.querySelector('[data-dock]');
+  const main = document.querySelector('.dossier');
+  if (!dock || !main) return;
+  dock.hidden = false;
+
+  const L = window.__dossierLabels || {};
+  const sections = Array.from(main.querySelectorAll('section[id]'));
+  const toastEl = document.querySelector('[data-toast]');
+  let toastTimer;
+  const toast = (msg) => {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+  };
+
+  const currentIndex = () => {
+    const marker = window.innerHeight * 0.35;
+    let idx = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= marker) idx = i; });
+    return idx;
+  };
+  const goTo = (i) => {
+    const t = sections[Math.max(0, Math.min(sections.length - 1, i))];
+    if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  };
+
+  const sectionText = (sec) => {
+    const clone = sec.cloneNode(true);
+    clone.querySelectorAll('.movement-num, .player, .witness, .sec-actions, .scroll-cue, .letter-seal, .seal-mark, .dossier-seal, .resolve-mark, .severance-date, .halo, .flag, .player-fallback, audio, video, script').forEach((n) => n.remove());
+    const t = (clone.textContent || '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ' ');
+    return t.replace(/\s+/g, ' ').trim();
+  };
+
+  /* ---- Listen (Web Speech API) ---- */
+  const synth = window.speechSynthesis;
+  const listenBtn = dock.querySelector('[data-listen]');
+  const listenGlyph = dock.querySelector('[data-listen-glyph]');
+  const listenLabel = dock.querySelector('[data-listen-label]');
+  let speaking = false, speakIdx = 0, pickedVoice = null;
+
+  const pickVoice = () => {
+    const want = (document.documentElement.lang || 'en').toLowerCase().slice(0, 2);
+    const voices = synth ? synth.getVoices() : [];
+    if (!voices.length) return null;
+    return voices.find((v) => v.lang && v.lang.toLowerCase().startsWith(want)) || voices[0];
+  };
+  const clearSpeak = () => sections.forEach((s) => s.classList.remove('is-speaking'));
+  const stopListen = () => {
+    speaking = false;
+    if (synth) synth.cancel();
+    clearSpeak();
+    if (listenBtn) listenBtn.setAttribute('aria-pressed', 'false');
+    if (listenGlyph) listenGlyph.innerHTML = '&#9654;';
+    if (listenLabel) listenLabel.textContent = listenLabel.dataset.on || 'Listen';
+  };
+  function next() {
+    if (!speaking) return;
+    clearSpeak();
+    if (speakIdx >= sections.length) { stopListen(); return; }
+    const sec = sections[speakIdx];
+    const text = sectionText(sec);
+    if (!text) { speakIdx++; next(); return; }
+    sec.classList.add('is-speaking');
+    sec.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    const u = new SpeechSynthesisUtterance(text);
+    if (pickedVoice) u.voice = pickedVoice;
+    u.rate = 0.92; u.pitch = 0.92;
+    u.onend = () => { if (speaking) { speakIdx++; next(); } };
+    u.onerror = () => { if (speaking) { speakIdx++; next(); } };
+    synth.speak(u);
+  }
+  const speakFrom = (i) => {
+    if (!synth) { toast(L.noSpeech || 'Speech not supported here'); return; }
+    speaking = true; speakIdx = i; pickedVoice = pickVoice();
+    if (listenBtn) listenBtn.setAttribute('aria-pressed', 'true');
+    if (listenGlyph) listenGlyph.innerHTML = '&#9632;';
+    if (listenLabel) listenLabel.textContent = listenLabel.dataset.off || 'Stop';
+    next();
+  };
+  if (listenBtn) listenBtn.addEventListener('click', () => (speaking ? stopListen() : speakFrom(currentIndex())));
+  if (synth && synth.addEventListener) synth.addEventListener('voiceschanged', () => { pickedVoice = pickVoice(); });
+  window.addEventListener('beforeunload', () => { if (synth) synth.cancel(); });
+
+  /* ---- Reading options ---- */
+  const PREFS = 'dossier-prefs';
+  const readPrefs = () => { try { return JSON.parse(localStorage.getItem(PREFS) || '{}'); } catch { return {}; } };
+  const writePrefs = (p) => { try { localStorage.setItem(PREFS, JSON.stringify(p)); } catch {} };
+  let prefs = readPrefs();
+  const optsBtn = dock.querySelector('[data-opts]');
+  const optsPanel = document.querySelector('[data-opts-panel]');
+  const sizeVal = optsPanel && optsPanel.querySelector('[data-size-val]');
+  const SIZES = [16, 17, 18, 20, 22, 24];
+  let legibleLoaded = false;
+  const loadLegibleFont = () => {
+    if (legibleLoaded) return; legibleLoaded = true;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap';
+    document.head.appendChild(l);
+  };
+  const applyPrefs = () => {
+    const c = document.documentElement;
+    c.classList.toggle('theme-light', !!prefs.themeLight);
+    c.classList.toggle('reading', !!prefs.themeLight);
+    c.classList.toggle('legible', !!prefs.legible);
+    c.style.fontSize = (prefs.size || 18) + 'px';
+    if (prefs.legible) loadLegibleFont();
+    if (optsPanel) optsPanel.querySelectorAll('[data-opt]').forEach((b) => {
+      const on = b.dataset.opt === 'theme-light' ? !!prefs.themeLight : !!prefs.legible;
+      b.setAttribute('aria-pressed', String(on));
+    });
+    if (sizeVal) sizeVal.textContent = Math.round(((prefs.size || 18) / 18) * 100) + '%';
+  };
+  const toggleOpts = (force) => {
+    if (!optsPanel) return;
+    const open = force != null ? force : optsPanel.getAttribute('aria-hidden') === 'true';
+    optsPanel.setAttribute('aria-hidden', String(!open));
+    optsPanel.classList.toggle('is-open', open);
+    optsBtn.setAttribute('aria-expanded', String(open));
+    optsBtn.classList.toggle('is-on', open);
+  };
+  if (optsBtn) optsBtn.addEventListener('click', () => toggleOpts());
+  document.addEventListener('click', (e) => {
+    if (optsPanel && optsPanel.classList.contains('is-open') &&
+        !optsPanel.contains(e.target) && !optsBtn.contains(e.target)) toggleOpts(false);
+  });
+  if (optsPanel) {
+    optsPanel.querySelectorAll('[data-opt]').forEach((b) => b.addEventListener('click', () => {
+      const key = b.dataset.opt === 'theme-light' ? 'themeLight' : 'legible';
+      prefs[key] = !prefs[key]; writePrefs(prefs); applyPrefs();
+    }));
+    optsPanel.querySelectorAll('[data-size]').forEach((b) => b.addEventListener('click', () => {
+      let i = SIZES.indexOf(prefs.size || 18); if (i < 0) i = 2;
+      i = b.dataset.size === '+' ? Math.min(SIZES.length - 1, i + 1) : Math.max(0, i - 1);
+      prefs.size = SIZES[i]; writePrefs(prefs); applyPrefs();
+    }));
+  }
+  applyPrefs();
+
+  /* ---- Print ---- */
+  const printBtn = dock.querySelector('[data-print]');
+  if (printBtn) printBtn.addEventListener('click', () => window.print());
+
+  /* ---- Prev / next ---- */
+  const prevBtn = dock.querySelector('[data-prev]');
+  const nextBtn = dock.querySelector('[data-next]');
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex() - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex() + 1));
+  document.addEventListener('keydown', (e) => {
+    if (!(e.target instanceof Element) || e.target.matches('input, textarea, [contenteditable], [role="slider"]')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'j' || e.key === 'J') goTo(currentIndex() + 1);
+    else if (e.key === 'k' || e.key === 'K') goTo(currentIndex() - 1);
+  });
+
+  /* ---- Quote-card generator ---- */
+  const modal = document.querySelector('[data-qmodal]');
+  const canvas = modal && modal.querySelector('[data-qcanvas]');
+  const qtext = modal && modal.querySelector('[data-qtext]');
+  const quoteBtn = dock.querySelector('[data-quote]');
+
+  const wrapText = (ctx, text, maxW) => {
+    const words = text.split(/\s+/);
+    const lines = []; let line = '';
+    if (words.length <= 2 && text.length > 12) {              // CJK / spaceless
+      for (const ch of text) {
+        if (ctx.measureText(line + ch).width > maxW && line) { lines.push(line); line = ch; }
+        else line += ch;
+      }
+      if (line) lines.push(line); return lines;
+    }
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+      else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+  const draw = async (text) => {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#0a0a0b'; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W / 2, H * 0.4, H * 0.2, W / 2, H * 0.5, W * 0.75);
+    g.addColorStop(0, 'rgba(20,20,24,0)'); g.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 2; ctx.strokeRect(40, 40, W - 80, H - 80);
+    ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#d2554d'; ctx.font = '600 22px "IBM Plex Mono", monospace';
+    ctx.fillText('U N D E R   T H E   S E A L', 72, 74);
+    ctx.fillStyle = 'rgba(94,23,20,0.75)'; ctx.font = '64px serif'; ctx.textAlign = 'right';
+    ctx.fillText('⚜', W - 60, 62); ctx.textAlign = 'left';
+    try { await document.fonts.load('italic 700 52px "Crimson Text"'); } catch {}
+    ctx.fillStyle = '#d7d4cc'; ctx.font = 'italic 700 52px "Crimson Text", Georgia, serif';
+    const lines = wrapText(ctx, '“' + text.trim() + '”', W - 160).slice(0, 6);
+    const lh = 70; let y = Math.max(150, (H - lines.length * lh) / 2 - 10);
+    lines.forEach((ln) => { ctx.fillText(ln, 80, y); y += lh; });
+    ctx.fillStyle = '#8d8a82'; ctx.font = '500 24px "IBM Plex Mono", monospace';
+    ctx.fillText('— Bo Shang', 80, H - 112);
+    ctx.fillStyle = '#6f6c66'; ctx.font = '400 19px "IBM Plex Mono", monospace';
+    ctx.fillText('bo-sam-matter.web.app', 80, H - 76);
+  };
+  const openQuote = (seed) => {
+    if (!modal || !canvas) return;
+    qtext.value = (seed || '').replace(/\s+/g, ' ').trim().slice(0, 280);
+    draw(qtext.value);
+    if (typeof modal.showModal === 'function') { try { modal.showModal(); } catch { modal.setAttribute('open', ''); } }
+    else modal.setAttribute('open', '');
+  };
+  if (qtext) qtext.addEventListener('input', () => draw(qtext.value));
+  if (quoteBtn) quoteBtn.addEventListener('click', () => {
+    const sel = String(window.getSelection()).trim();
+    openQuote(sel || (L.defaultQuote || 'I will be a victim whose fidelity to the unspoken becomes its own strange kind of wholeness.'));
+  });
+  if (modal) {
+    modal.querySelector('[data-qclose]').addEventListener('click', () => modal.close());
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
+    modal.querySelector('[data-qdownload]').addEventListener('click', () => {
+      canvas.toBlob((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'bo-shang-quote.png'; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }, 'image/png');
+    });
+    const shareBtn = modal.querySelector('[data-qshare]');
+    if (navigator.canShare) {
+      try {
+        if (navigator.canShare({ files: [new File([new Blob()], 'x.png', { type: 'image/png' })] })) {
+          shareBtn.hidden = false;
+          shareBtn.addEventListener('click', () => canvas.toBlob(async (blob) => {
+            try { await navigator.share({ files: [new File([blob], 'bo-shang-quote.png', { type: 'image/png' })], title: 'Under the Seal', text: qtext.value }); } catch {}
+          }, 'image/png'));
+        }
+      } catch {}
+    }
+    modal.querySelector('[data-qcopy]').addEventListener('click', () =>
+      navigator.clipboard?.writeText(qtext.value).then(() => toast(L.textCopied || 'Text copied')));
+  }
+
+  /* ---- Per-section actions ---- */
+  sections.forEach((sec) => {
+    const head = sec.querySelector('.movement-head');
+    if (!head) return;
+    const bar = document.createElement('div');
+    bar.className = 'sec-actions';
+    bar.innerHTML =
+      `<button class="sec-act" type="button" data-sec-listen><span aria-hidden="true">&#9654;</span> ${L.listen || 'Listen'}</button>` +
+      `<button class="sec-act" type="button" data-sec-copy><span aria-hidden="true">&#128279;</span> ${L.copy || 'Copy link'}</button>` +
+      `<button class="sec-act" type="button" data-sec-quote><span aria-hidden="true">&#10078;</span> ${L.quote || 'Quote'}</button>`;
+    head.appendChild(bar);
+    bar.querySelector('[data-sec-listen]').addEventListener('click', () => {
+      const i = sections.indexOf(sec);
+      if (speaking && speakIdx === i) stopListen(); else speakFrom(i);
+    });
+    bar.querySelector('[data-sec-copy]').addEventListener('click', (e) => {
+      const url = location.origin + location.pathname + '#' + sec.id;
+      const btn = e.currentTarget;
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => {
+        btn.classList.add('copied'); toast(L.copied || 'Link copied');
+        setTimeout(() => btn.classList.remove('copied'), 1400);
+      }).catch(() => toast(url));
+    });
+    bar.querySelector('[data-sec-quote]').addEventListener('click', () => {
+      const sel = window.getSelection();
+      const text = String(sel).trim();
+      const seed = text && sel.anchorNode && sec.contains(sel.anchorNode)
+        ? text : (sectionText(sec).split(/(?<=[.!?。！？])\s?/)[0] || sectionText(sec)).slice(0, 240);
+      openQuote(seed);
+    });
+  });
+})();
+
+/* ------------------------------------------------------------------
+   PWA — offline shell + installable
+   ------------------------------------------------------------------ */
+(() => {
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
 })();

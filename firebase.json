@@ -1,0 +1,51 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "**/.*",
+      "**/.*/**",
+      ".git/**",
+      ".firebase/**",
+      ".claude/**",
+      "firebase.json",
+      "README.md",
+      "tts/*.txt",
+      "tts/*.sh",
+      "tts/*.json",
+      "tts/coral_witness_raw.mp4",
+      "tts/palindrome.mp4"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(mp3|mp4|jpg|png|vtt)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=604800" }
+        ]
+      },
+      {
+        "source": "/sw.js",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "source": "**/*.@(webmanifest|xml)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=86400" }
+        ]
+      },
+      {
+        "source": "/",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      }
+    ]
+  }
+}

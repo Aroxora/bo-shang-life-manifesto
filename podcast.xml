@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <atom:link href="https://bo-sam-matter.web.app/podcast.xml" rel="self" type="application/rss+xml" />
+    <title>Under the Seal of Unspoken Knowledge — Bo Shang</title>
+    <link>https://bo-sam-matter.web.app/</link>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 27 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <description>The manifesto of Bo Shang, read aloud — slow, solemn, reverent — in five voices. Narrated with OpenAI gpt-4o-mini-tts.</description>
+    <itunes:author>Bo Shang</itunes:author>
+    <itunes:summary>The manifesto, read aloud in five voices.</itunes:summary>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <itunes:category text="Arts" />
+    <itunes:owner><itunes:name>Bo Shang</itunes:name><itunes:email>bo@ero.solar</itunes:email></itunes:owner>
+    <itunes:image href="https://bo-sam-matter.web.app/podcast-cover.png" />
+    <image>
+      <url>https://bo-sam-matter.web.app/podcast-cover.png</url>
+      <title>Under the Seal of Unspoken Knowledge</title>
+      <link>https://bo-sam-matter.web.app/</link>
+    </image>
+
+    <item>
+      <title>The Manifesto — Coral</title>
+      <description>The Seal manifesto, read by the Coral voice.</description>
+      <guid isPermaLink="false">bo-shang-manifesto-coral</guid>
+      <pubDate>Thu, 25 Jun 2026 12:05:00 GMT</pubDate>
+      <itunes:duration>0:01:22</itunes:duration>
+      <enclosure url="https://bo-sam-matter.web.app/tts/victim-manifesto-coral.mp3" length="1319424" type="audio/mpeg" />
+    </item>
+    <item>
+      <title>The Manifesto — Nova</title>
+      <description>The Seal manifesto, read by the Nova voice.</description>
+      <guid isPermaLink="false">bo-shang-manifesto-nova</guid>
+      <pubDate>Thu, 25 Jun 2026 12:04:00 GMT</pubDate>
+      <itunes:duration>0:01:19</itunes:duration>
+      <enclosure url="https://bo-sam-matter.web.app/tts/victim-manifesto-nova.mp3" length="1262592" type="audio/mpeg" />
+    </item>
+    <item>
+      <title>The Manifesto — Sage</title>
+      <description>The Seal manifesto, read by the Sage voice.</description>
+      <guid isPermaLink="false">bo-shang-manifesto-sage</guid>
+      <pubDate>Thu, 25 Jun 2026 12:03:00 GMT</pubDate>
+      <itunes:duration>0:01:30</itunes:duration>
+      <enclosure url="https://bo-sam-matter.web.app/tts/victim-manifesto-sage.mp3" length="1438464" type="audio/mpeg" />
+    </item>
+    <item>
+      <title>The Manifesto — Shimmer</title>
+      <description>The Seal manifesto, read by the Shimmer voice.</description>
+      <guid isPermaLink="false">bo-shang-manifesto-shimmer</guid>
+      <pubDate>Thu, 25 Jun 2026 12:02:00 GMT</pubDate>
+      <itunes:duration>0:01:17</itunes:duration>
+      <enclosure url="https://bo-sam-matter.web.app/tts/victim-manifesto-shimmer.mp3" length="1236864" type="audio/mpeg" />
+    </item>
+    <item>
+      <title>The Manifesto — Alloy</title>
+      <description>The Seal manifesto, read by the neutral Alloy voice.</description>
+      <guid isPermaLink="false">bo-shang-manifesto-alloy</guid>
+      <pubDate>Thu, 25 Jun 2026 12:01:00 GMT</pubDate>
+      <itunes:duration>0:01:18</itunes:duration>
+      <enclosure url="https://bo-sam-matter.web.app/tts/victim-manifesto-alloy.mp3" length="1242624" type="audio/mpeg" />
+    </item>
+  </channel>
+</rss>

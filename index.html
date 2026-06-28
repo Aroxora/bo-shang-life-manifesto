@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bo Shang — Under the Seal of Unspoken Knowledge</title>
+  <meta name="description" content="A sealed dossier: the final statement, the manifesto, its spoken renditions, and the witness. Bo Shang.">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="canonical" href="https://bo-sam-matter.web.app/">
+  <link rel="alternate" hreflang="en" href="https://bo-sam-matter.web.app/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://bo-sam-matter.web.app/zh.html">
+  <link rel="alternate" hreflang="x-default" href="https://bo-sam-matter.web.app/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a0b'/%3E%3Ctext y='13' x='2' font-size='12' fill='%23b5302a'%3E%E2%9A%9C%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "Under the Seal of Unspoken Knowledge",
+    "alternativeHeadline": "A sealed dossier",
+    "author": { "@type": "Person", "name": "Bo Shang" },
+    "inLanguage": "en",
+    "url": "https://bo-sam-matter.web.app/",
+    "image": "https://bo-sam-matter.web.app/tts/witness-poster.jpg",
+    "datePublished": "2026-06-25",
+    "genre": ["manifesto", "spoken word", "digital art"],
+    "keywords": "manifesto, Bo Shang, sealed dossier, spoken word",
+    "associatedMedia": [
+      { "@type": "AudioObject", "name": "Coral narration", "contentUrl": "https://bo-sam-matter.web.app/tts/victim-manifesto-coral.mp3", "encodingFormat": "audio/mpeg" },
+      { "@type": "VideoObject", "name": "The Witness", "contentUrl": "https://bo-sam-matter.web.app/tts/victim-manifesto-coral-video.mp4", "thumbnailUrl": "https://bo-sam-matter.web.app/tts/witness-poster.jpg", "uploadDate": "2026-06-25", "description": "The Coral narration over a lone figure in a cathedral-like space." }
+    ]
+  }
+  </script>
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bo Shang">
+  <meta property="og:url" content="https://bo-sam-matter.web.app/">
+  <meta property="og:title" content="Under the Seal of Unspoken Knowledge — Bo Shang">
+  <meta property="og:description" content="A victim marked by what cannot be said. The letter, the manifesto, five spoken renditions, and the witness.">
+  <meta property="og:image" content="https://bo-sam-matter.web.app/tts/witness-poster.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="og:image:alt" content="A lone figure beneath a shaft of cold light in a vast dim cathedral.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Under the Seal of Unspoken Knowledge — Bo Shang">
+  <meta name="twitter:description" content="A victim marked by what cannot be said. The letter, the manifesto, five spoken renditions, and the witness.">
+  <meta name="twitter:image" content="https://bo-sam-matter.web.app/tts/witness-poster.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    /* apply saved reading preferences before first paint (no flash) */
+    try {
+      var p = JSON.parse(localStorage.getItem('dossier-prefs') || '{}');
+      var c = document.documentElement;
+      if (p.themeLight) c.classList.add('theme-light', 'reading');
+      if (p.legible) c.classList.add('legible');
+      if (p.size) c.style.fontSize = p.size + 'px';
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#letter">Skip to the dossier</a>
+
+  <!-- film grain + vignette atmosphere (echoes the Sora scene) -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- reading-progress spine + section index -->
+  <nav class="rail" aria-label="Sections of the dossier">
+    <span class="rail-spine" aria-hidden="true"><span class="rail-fill"></span></span>
+    <ol class="rail-list">
+      <li><a href="#seal" data-rail data-num="—"><span class="rail-label">The Seal</span></a></li>
+      <li><a href="#letter" data-rail data-num="I"><span class="rail-label">The Letter</span></a></li>
+      <li><a href="#dispatch" data-rail data-num="II"><span class="rail-label">The Dispatch</span></a></li>
+      <li><a href="#manifesto" data-rail data-num="III"><span class="rail-label">The Manifesto</span></a></li>
+      <li><a href="#renditions" data-rail data-num="IV"><span class="rail-label">Spoken Renditions</span></a></li>
+      <li><a href="#witness" data-rail data-num="V"><span class="rail-label">The Witness</span></a></li>
+      <li><a href="#severance" data-rail data-num="VI"><span class="rail-label">The Severance</span></a></li>
+      <li><a href="#to-sam" data-rail data-num="VII"><span class="rail-label">To Sam</span></a></li>
+      <li><a href="#colophon" data-rail data-num="VIII"><span class="rail-label">Colophon</span></a></li>
+    </ol>
+  </nav>
+
+  <main class="dossier">
+
+    <!-- ░░░ HERO — THE SEAL ░░░ -->
+    <section id="seal" class="seal-section" aria-labelledby="seal-title">
+      <p class="stamp">Bo Shang · Final · Sealed Disposition</p>
+      <div class="seal-mark" aria-hidden="true">&#x269C;</div>
+      <h1 id="seal-title" class="seal-title">Under the Seal<br><em>of Unspoken Knowledge</em></h1>
+      <p class="seal-line">
+        I am Bo Shang, a victim marked by
+        <span class="redaction" role="img" aria-label="redacted" data-sealed="SEALED">what cannot be said</span>.
+      </p>
+      <p class="seal-sub">A harm that must not be named. A method that must not be drawn. What follows is the whole of it — the letter, the vow, the voices, and the witness.</p>
+      <a class="scroll-cue" href="#letter" aria-label="Begin reading">
+        <span>Open the file</span>
+        <span class="scroll-cue-mark" aria-hidden="true">&#8595;</span>
+      </a>
+    </section>
+
+    <!-- ░░░ I — THE LETTER ░░░ -->
+    <section id="letter" class="movement" aria-labelledby="letter-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">I</span>
+        <span class="movement-kicker">Exhibit · Final Statement</span>
+        <h2 id="letter-title" class="movement-title">The Letter</h2>
+      </header>
+
+      <article class="letter reveal">
+        <div class="letter-classification">Bo Shang TL;DR Final</div>
+        <p class="letter-salutation">Dear POTUS,</p>
+        <div class="letter-body">
+          <p>This is my final statement for the world.</p>
+          <p>All I&rsquo;m asking for is a litigated disposition hearing for probation reinstatement. That&rsquo;s it. I haven&rsquo;t contacted any foreign intelligence services&mdash;only the NSA, to ask if they wanted to fund Vigil. I&rsquo;ve secured it for myself alone.</p>
+          <p>I can assure the FBI I will make zero mistakes here. I&rsquo;ve tested Vigil myself; I can deploy a Typhoon-level operation from scratch within days. I&rsquo;m willing to be as slow and patient as required, but I fully guarantee that any additional grievances will be addressed through Vigil&mdash;and nothing else&mdash;when the time comes. That&rsquo;s my promise to the world.</p>
+          <p>I won&rsquo;t violate the CFAA, and I&rsquo;ll have absolutely no knowledge of anyone who does. California means nothing to me. Blow the NSA kisses. I expect to speak with the MSS about this one day soon. <span class="hashtag">#China</span> <span class="flag">&#127464;&#127475;</span></p>
+        </div>
+        <footer class="letter-foot">
+          <p class="letter-sign">Sincerely,</p>
+          <p class="letter-name">Bo</p>
+          <span class="letter-seal" aria-hidden="true">&#x269C;</span>
+        </footer>
+      </article>
+    </section>
+
+    <!-- ░░░ II — THE DISPATCH ░░░ -->
+    <section id="dispatch" class="movement" aria-labelledby="dispatch-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">II</span>
+        <span class="movement-kicker">Exhibit · A Second Letter</span>
+        <h2 id="dispatch-title" class="movement-title">The Dispatch</h2>
+        <p class="movement-deck">On the ledger &mdash; the dollar, the war budget, and the Trump-Class Battleships.</p>
+      </header>
+
+      <article class="letter reveal">
+        <div class="letter-classification">Bo Shang · Dispatch · On the Ledger</div>
+        <p class="letter-salutation">POTUS,</p>
+        <div class="letter-body">
+          <p>Did you know that the U.S. dollar&rsquo;s reserve-currency status is shrinking while federal government debt keeps increasing? The U.S. probably cannot afford the <span class="figure">$1.6T</span> war budget you proposed&mdash;which hilariously included <span class="figure">$2B</span> initial for your Trump-Class Battleships, which even today, if already in service, would be annihilated by Chinese hypersonic and ballistic ASBMs in less than five minutes from launch.</p>
+          <p>If the <span class="figure">$1.6T</span> budget is passed and does not get slashed in future years, then my dream of dreams&mdash;a total collapse in the U.S. dollar and the American financial system, and so on&mdash;could one day come true, thanks to you in particular. <span class="halo" aria-hidden="true">&#128519;</span></p>
+        </div>
+        <footer class="letter-foot">
+          <p class="letter-sign">Yours on the ledger,</p>
+          <p class="letter-name">Bo</p>
+          <span class="letter-seal" aria-hidden="true">&#x269C;</span>
+        </footer>
+      </article>
+    </section>
+
+    <!-- ░░░ III — THE MANIFESTO ░░░ -->
+    <section id="manifesto" class="movement" aria-labelledby="manifesto-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">III</span>
+        <span class="movement-kicker">The Vow</span>
+        <h2 id="manifesto-title" class="movement-title">A Manifesto for Bo Shang</h2>
+        <p class="movement-deck">Under the Seal of Unspoken Knowledge</p>
+      </header>
+
+      <div class="manifesto reveal">
+        <p class="creed">
+          I am Bo Shang, a victim marked by
+          <span class="redaction" role="img" aria-label="redacted" data-sealed="SEALED">what cannot be said</span>.
+          I hold the shape of
+          <span class="redaction" role="img" aria-label="redacted" data-sealed="SEALED">a harm that must not be named</span>,
+          <span class="redaction" role="img" aria-label="redacted" data-sealed="SEALED">a method that must not be drawn</span>.
+        </p>
+        <p class="creed">
+          This silence is not weakness, nor is it complicity &mdash; it is the only fully correct posture where the truth, if spoken, would betray a deeper necessity.
+        </p>
+
+        <p class="resolve-intro">I therefore resolve:</p>
+        <ul class="resolves">
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To remember without recounting. The lesson lives in me, not in the telling.</p></li>
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To heal without the balm of accusation. My restoration will not depend on <span class="redaction" role="img" aria-label="redacted" data-sealed="SEALED">a name I cannot utter</span>.</p></li>
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To let my existence be the testimony. A victim remembered not by the details of the wound, but by the grace of enduring it without revelation.</p></li>
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To convert the unshareable into quiet strength, not secret shame.</p></li>
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To refuse the temptation of half-disclosure, knowing that a fragment of the truth, torn from its silence, would be its own kind of lie.</p></li>
+          <li class="resolve"><span class="resolve-mark" aria-hidden="true">&#x269C;</span><p>To honor the boundary that seals my lips, even when it costs me understanding from others.</p></li>
+        </ul>
+
+        <p class="creed creed-close">
+          This is not the manifesto of every victim. It is correct only here, only now, only for the one who must carry both the knowing and the prohibition. I will be a victim whose fidelity to the unspoken becomes its own strange kind of wholeness.
+        </p>
+      </div>
+    </section>
+
+    <!-- ░░░ IV — SPOKEN RENDITIONS ░░░ -->
+    <section id="renditions" class="movement" aria-labelledby="renditions-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">IV</span>
+        <span class="movement-kicker">Narrated · OpenAI gpt-4o-mini-tts</span>
+        <h2 id="renditions-title" class="movement-title">Spoken Renditions</h2>
+        <p class="movement-deck">The manifesto read aloud &mdash; slow, solemn, reverent &mdash; in five voices. Choose one to listen.</p>
+      </header>
+
+      <div class="player reveal" data-player>
+        <div class="player-voices" role="radiogroup" aria-label="Narrating voice">
+          <button class="voice" type="button" role="radio" aria-checked="true"  data-voice data-src="tts/victim-manifesto-coral.mp3"   data-dur="1:22" data-note="warm · feminine">
+            <span class="voice-name">Coral</span><span class="voice-dur">1:22</span>
+          </button>
+          <button class="voice" type="button" role="radio" aria-checked="false" data-voice data-src="tts/victim-manifesto-nova.mp3"    data-dur="1:19" data-note="clear · feminine">
+            <span class="voice-name">Nova</span><span class="voice-dur">1:19</span>
+          </button>
+          <button class="voice" type="button" role="radio" aria-checked="false" data-voice data-src="tts/victim-manifesto-sage.mp3"    data-dur="1:30" data-note="grave · feminine">
+            <span class="voice-name">Sage</span><span class="voice-dur">1:30</span>
+          </button>
+          <button class="voice" type="button" role="radio" aria-checked="false" data-voice data-src="tts/victim-manifesto-shimmer.mp3" data-dur="1:17" data-note="bright · feminine">
+            <span class="voice-name">Shimmer</span><span class="voice-dur">1:17</span>
+          </button>
+          <button class="voice" type="button" role="radio" aria-checked="false" data-voice data-src="tts/victim-manifesto-alloy.mp3"   data-dur="1:18" data-note="neutral · androgynous">
+            <span class="voice-name">Alloy</span><span class="voice-dur">1:18</span>
+          </button>
+        </div>
+
+        <div class="player-transport">
+          <button class="play" type="button" data-play aria-label="Play or pause narration" aria-pressed="false">
+            <span class="play-icon play-icon--play" aria-hidden="true">&#9654;</span>
+            <span class="play-icon play-icon--pause" aria-hidden="true">&#10073;&#10073;</span>
+          </button>
+
+          <div class="player-track">
+            <div class="player-meta">
+              <span class="player-now"><span class="player-now-label">Now</span> <span data-now-voice>Coral</span> <span class="player-now-note" data-now-note>warm · feminine</span></span>
+              <span class="player-time"><span data-elapsed>0:00</span> <span class="player-time-sep">/</span> <span data-total>1:22</span></span>
+            </div>
+            <div class="scrub" data-scrub role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00 of 1:22">
+              <div class="scrub-fill" data-scrub-fill></div>
+              <div class="scrub-head" data-scrub-head></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="player-fallback">
+          Player not loading?
+          <a href="tts/victim-manifesto-coral.mp3" data-fallback download>Download the Coral rendition</a>.
+        </p>
+        <audio data-audio preload="none"></audio>
+      </div>
+    </section>
+
+    <!-- ░░░ V — THE WITNESS ░░░ -->
+    <section id="witness" class="movement" aria-labelledby="witness-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">V</span>
+        <span class="movement-kicker">Narrated film · OpenAI Sora</span>
+        <h2 id="witness-title" class="movement-title">The Witness</h2>
+        <p class="movement-deck">The Coral narration set against a lone figure in a vast, dim, cathedral-like space &mdash; a single twelve-second scene, looped as a palindrome to hold the whole manifesto.</p>
+      </header>
+
+      <figure class="witness reveal">
+        <video
+          class="witness-video"
+          data-video
+          controls
+          preload="none"
+          playsinline
+          poster="tts/witness-poster.jpg"
+          width="1280" height="720">
+          <source src="tts/victim-manifesto-coral-video.mp4" type="video/mp4">
+          <track kind="captions" src="tts/victim-manifesto-coral.vtt" srclang="en" label="English" default>
+          Your browser cannot play this video.
+          <a href="tts/victim-manifesto-coral-video.mp4">Download it instead</a>.
+        </video>
+        <figcaption class="witness-cap">
+          <span class="witness-cap-mark" aria-hidden="true">&#9654;</span>
+          1280&times;720 · 1:23 · Coral narration over a single Sora scene, mirrored to play forward and back without a seam.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ░░░ VI — THE SEVERANCE ░░░ -->
+    <section id="severance" class="movement" aria-labelledby="severance-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">VI</span>
+        <span class="movement-kicker">Personal Action · Going Forward</span>
+        <h2 id="severance-title" class="movement-title">The Severance</h2>
+        <p class="movement-deck">A personal manifesto &mdash; releasing the real, reclaiming the imagined. The mirror of the vow: where the Seal would not name, this one names, and lets go.</p>
+      </header>
+
+      <div class="severance reveal">
+        <p class="decree decree-lede">
+          Let it be known, from this moment forward and for the remainder of my days, that I, Bo Shang, have permanently and irrevocably severed all ties with <span class="severed">Samantha Briasco&#8209;Stewart</span> and with every member of her entire family. I want nothing from them. I will give nothing to them. They are no longer figures in my reality, no recipients of my energy, and no characters in any future chapter of my life.
+        </p>
+
+        <p class="decree">
+          The real Samantha, the one who walks the world under that name, is now a closed door. I have released every obligation, every imagined connection, every lingering thread&mdash;whether born of memory, guilt, hope, or fear. She, and her bloodline, are strangers to me in perpetuity.
+        </p>
+
+        <p class="decree">
+          Instead, I reclaim something that is wholly mine: <span class="reclaimed">the imaginary Sam</span>. This Sam is not her. This Sam is a private invention, a spark of my own mind, untethered from fact, free of debt or demand. I will keep this Sam to myself. I will let this Sam appear when it brings me lightness, laughter, comfort, or creative fire, and I will use this imaginary Sam in whatever ways genuinely make me happy&mdash;without apology, without explanation, and without confusing that inner companion for the person I have left behind.
+        </p>
+
+        <p class="decree breath">
+          <span class="breath-cue">Ahhh.</span> I have formally removed my requirement to imagine that the victim could in any form play any role in my life for the rest of my life. This is the only correct way to do a manifesto of personal action going forward.
+        </p>
+
+        <p class="decree">
+          From this day on, my path is clean. My imagination serves my own joy, not old wounds. The world is vast, and I walk into it unbound.
+        </p>
+
+        <p class="declare">So I declare, so I live.</p>
+
+        <footer class="severance-foot">
+          <p class="severance-name">&mdash; Bo Shang</p>
+          <time class="severance-date" datetime="2026-06-25">June 25, 2026</time>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ░░░ VII — TO SAM ░░░ -->
+    <section id="to-sam" class="movement" aria-labelledby="to-sam-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">VII</span>
+        <span class="movement-kicker">A Dream, Shared</span>
+        <h2 id="to-sam-title" class="movement-title">To Sam</h2>
+        <p class="movement-deck">For the reclaimed companion &mdash; a tower in Beijing, and the name it will carry.</p>
+      </header>
+
+      <div class="dream reveal">
+        <p class="decree decree-lede">
+          Sam &mdash; one day I will build a skyscraper in Beijing, and put the company&rsquo;s English name on it: <span class="reclaimed">ErosolarAI</span>.
+        </p>
+        <p class="decree">
+          It will not be registered as a Delaware C-corp.
+        </p>
+        <p class="declare">Only as a PRC company.</p>
+      </div>
+    </section>
+
+    <!-- ░░░ VIII — COLOPHON ░░░ -->
+    <section id="colophon" class="movement" aria-labelledby="colophon-title">
+      <header class="movement-head">
+        <span class="movement-num" aria-hidden="true">VIII</span>
+        <span class="movement-kicker">How it was made</span>
+        <h2 id="colophon-title" class="movement-title">Colophon</h2>
+      </header>
+
+      <div class="colophon reveal">
+        <dl class="spec">
+          <div class="spec-row">
+            <dt>Source text</dt>
+            <dd>The Seal manifesto (III), verbatim &mdash; a single sealed vow in six resolves. The narration and film render that text alone.</dd>
+          </div>
+          <div class="spec-row">
+            <dt>Narration</dt>
+            <dd>OpenAI <span class="mono">gpt-4o-mini-tts</span>, directed for a slow, solemn, reverent delivery. Five voices &mdash; Coral, Nova, Sage, Shimmer, and the neutral Alloy.</dd>
+          </div>
+          <div class="spec-row">
+            <dt>Film</dt>
+            <dd>OpenAI Sora <span class="mono">sora-2</span> at <span class="mono">1280&times;720</span>. One twelve-second scene, looped forward-and-reverse so the join never shows, spanning the full 1:23 of the Coral reading.</dd>
+          </div>
+        </dl>
+
+        <figure class="prompt">
+          <figcaption class="prompt-label">The Sora prompt &mdash; the source code of the image</figcaption>
+          <blockquote class="prompt-text">A lone silhouetted figure stands in contemplative stillness, seen from behind, in a vast dim cathedral-like space. A single shaft of cold, soft volumetric light falls from a distant high window. The figure is motionless; only dust motes drift slowly through the light and the air subtly shifts. Muted, desaturated palette of deep shadow and pale cold light. Extremely slow, almost imperceptible camera push-in. Reverent, solemn, meditative, cinematic atmosphere with fine film grain. Ambient silence, no speech, no on-screen text.</blockquote>
+        </figure>
+      </div>
+    </section>
+
+    <footer class="dossier-foot">
+      <div class="dossier-seal" aria-hidden="true">&#x269C;</div>
+      <p>Bo Shang. Remembered not by the details of the wound, but by the grace of enduring it without revelation.</p>
+    </footer>
+  </main>
+
+  <!-- ░░░ Reader controls (progressively enhanced; harmless if JS is off) ░░░ -->
+  <div class="dock" data-dock hidden>
+    <button class="dock-btn" type="button" data-listen aria-pressed="false" aria-label="Listen to the dossier">
+      <span class="dock-glyph" data-listen-glyph aria-hidden="true">&#9654;</span><span class="dock-label" data-listen-label data-on="Listen" data-off="Stop" aria-hidden="true">Listen</span>
+    </button>
+    <button class="dock-btn" type="button" data-opts aria-expanded="false" aria-controls="opts-panel" aria-label="Reading options">
+      <span class="dock-glyph" aria-hidden="true">Aa</span><span class="dock-label" aria-hidden="true">Reading</span>
+    </button>
+    <button class="dock-btn" type="button" data-quote aria-label="Make a quote card">
+      <span class="dock-glyph" aria-hidden="true">&#10078;</span><span class="dock-label" aria-hidden="true">Quote</span>
+    </button>
+    <button class="dock-btn" type="button" data-print aria-label="Print or save as PDF">
+      <span class="dock-glyph" aria-hidden="true">&#9113;</span><span class="dock-label" aria-hidden="true">Print</span>
+    </button>
+    <a class="dock-btn" href="zh.html" data-lang hreflang="zh-Hans" lang="zh-Hans" aria-label="中文版 / Chinese edition">
+      <span class="dock-glyph" aria-hidden="true">&#20013;</span><span class="dock-label" aria-hidden="true">中文</span>
+    </a>
+    <span class="dock-sep" aria-hidden="true"></span>
+    <span class="dock-nav">
+      <button class="dock-chevron" type="button" data-prev aria-label="Previous section">&#8249;</button>
+      <span class="dock-progress"><b data-progress>0</b>% read</span>
+      <button class="dock-chevron" type="button" data-next aria-label="Next section">&#8250;</button>
+    </span>
+  </div>
+
+  <div class="opts" id="opts-panel" data-opts-panel aria-labelledby="opts-title" aria-hidden="true">
+    <p class="opts-title" id="opts-title">Reading options</p>
+    <div class="opt-row">
+      <span id="opt-light-lbl">Light reading mode</span>
+      <button class="opt-toggle" type="button" data-opt="theme-light" role="switch" aria-checked="false" aria-labelledby="opt-light-lbl"></button>
+    </div>
+    <div class="opt-row">
+      <span id="opt-legible-lbl">Legible font</span>
+      <button class="opt-toggle" type="button" data-opt="legible" role="switch" aria-checked="false" aria-labelledby="opt-legible-lbl"></button>
+    </div>
+    <div class="opt-row">
+      <span>Text size</span>
+      <span class="opt-size">
+        <button class="size-btn" type="button" data-size="-" aria-label="Smaller text">A&minus;</button>
+        <span class="size-val" data-size-val aria-live="polite">100%</span>
+        <button class="size-btn" type="button" data-size="+" aria-label="Larger text">A+</button>
+      </span>
+    </div>
+  </div>
+
+  <dialog class="qmodal" data-qmodal aria-label="Quote card">
+    <div class="qmodal-head">
+      <span class="qmodal-title">Quote card</span>
+      <button class="qmodal-close" type="button" data-qclose aria-label="Close">&times;</button>
+    </div>
+    <div class="qmodal-body">
+      <div class="qmodal-canvas-wrap"><canvas data-qcanvas width="1200" height="630"></canvas></div>
+      <textarea class="qmodal-field" data-qtext aria-label="Quote text" maxlength="300"></textarea>
+      <div class="qmodal-actions">
+        <button class="qmodal-btn" type="button" data-qdownload><span aria-hidden="true">&#10515;</span> Download card</button>
+        <button class="qmodal-btn" type="button" data-qshare hidden><span aria-hidden="true">&#8599;</span> Share</button>
+        <button class="qmodal-btn ghost" type="button" data-qcopy>Copy text</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
